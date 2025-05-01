@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -27,7 +28,17 @@ func handleGetFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(data)
+	lines := strings.Split(string(data), "\n")
+
+	reverseStrings(lines)
+
+	w.Write([]byte(strings.Join(lines, "\n")))
+}
+
+func reverseStrings(s []string) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
 }
 
 func generateKey(w http.ResponseWriter, r *http.Request) {
