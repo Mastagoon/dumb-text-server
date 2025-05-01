@@ -1,0 +1,89 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"math/rand"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
+)
+
+const dir = "./data"
+
+func init() {
+	os.Mkdir(dir, 0755)
+}
+
+func handleGetFile(w http.ResponseWriter, r *http.Request) {
+	key := r.URL.Path[1:]
+	path := filepath.Join(dir, key)
+
+	data, err := os.ReadFile(path)
+
+	if err != nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	w.Write(data)
+}
+
+func generateKey(w http.ResponseWriter, r *http.Request) {
+	key := fmt.Sprintf("%08x", rand.Uint32())
+	path := filepath.Join(dir, key)
+
+	file, err := os.Create(path)
+	if err != nil {
+		http.Error(w, "failed to create file", http.StatusInternalServerError)
+		return
+	}
+
+	file.Close()
+	w.Write([]byte(key))
+}
+
+type postData struct {
+	Data string `json:"data"`
+}
+
+func handleWriteToFile(w http.ResponseWriter, r *http.Request) {
+	data, err := io.ReadAll(r.Body)
+	if err != nil || string(data) == "" {
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
+
+	key := r.URL.Path[1:]
+	path := filepath.Join(dir, key)
+
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		http.Error(w, "Failed to open file", http.StatusNotFound)
+		return
+	}
+	defer file.Close()
+
+	// seperator
+	now := time.Now().Format("15:04:05")
+	_, err = file.WriteString(fmt.Sprintf("\n\n\n\n%s\n%s", fmt.Sprintf("@%s - :", now), string(data)))
+
+	if err != nil {
+		http.Error(w, "Failed to write", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte("OK"))
+}
+
+func main() {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /generate", generateKey)
+	mux.HandleFunc("GET /{key}", handleGetFile)
+	mux.HandleFunc("POST /{key}", handleWriteToFile)
+
+	fmt.Println("listening on :6969")
+	http.ListenAndServe(":6969", mux)
+}
