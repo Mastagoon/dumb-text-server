@@ -78,7 +78,7 @@ func handleWriteToFile(w http.ResponseWriter, r *http.Request) {
 
 	// seperator
 	now := time.Now().Format("15:04:05")
-	_, err = file.WriteString(fmt.Sprintf("\n\n\n\n%s\n%s", fmt.Sprintf("@%s - :", now), string(data)))
+	_, err = file.WriteString(fmt.Sprintf("\n\n\n\n%s\n%s", string(data), fmt.Sprintf("@%s - :", now)))
 
 	if err != nil {
 		http.Error(w, "Failed to write", http.StatusInternalServerError)
