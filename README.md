@@ -1,4 +1,4 @@
-G# Dumb Text Storage Server
+## Dumb Text Storage Server
 
 This is a simple Go-based HTTP server that allows clients to:
 - Generate unique files
