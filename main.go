@@ -71,6 +71,7 @@ func handleWriteToFile(w http.ResponseWriter, r *http.Request) {
 
 	if len(string(data)) > MAX_STR {
 		http.Error(w, "Input too long", http.StatusBadRequest)
+		return
 	}
 
 	key := r.URL.Path[1:]
