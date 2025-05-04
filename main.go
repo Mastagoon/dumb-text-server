@@ -14,6 +14,7 @@ import (
 
 const dir = "./data"
 const MAX_STR = 1024 * 4
+const SWEEP_INTERVAL = time.Hour * 2
 
 func init() {
 	os.Mkdir(dir, 0755)
@@ -133,6 +134,5 @@ func sweepFiles() {
 			os.Remove(path)
 		}
 	}
-	// run every 2 hours
-	time.AfterFunc(time.Hour*2, sweepFiles)
+	time.AfterFunc(SWEEP_INTERVAL, sweepFiles)
 }
