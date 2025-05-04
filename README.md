@@ -19,7 +19,6 @@ This is a simple Go-based HTTP server that allows clients to:
 ##  Requirements
 
 - Go 1.18 or later
-- Linux/macOS with standard libc headers if using CGO (not required here)
 
 ---
 
