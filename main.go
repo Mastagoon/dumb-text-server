@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"io"
-	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const dir = "./data"
@@ -42,7 +43,7 @@ func reverseStrings(s []string) {
 }
 
 func generateKey(w http.ResponseWriter, r *http.Request) {
-	key := fmt.Sprintf("%08x", rand.Uint32())
+	key := uuid.NewString()
 	path := filepath.Join(dir, key)
 
 	file, err := os.Create(path)
@@ -89,6 +90,9 @@ func handleWriteToFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// sweep old files
+	sweepFiles()
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /generate", generateKey)
@@ -97,4 +101,33 @@ func main() {
 
 	fmt.Println("listening on :6969")
 	http.ListenAndServe(":6969", mux)
+}
+
+func sweepFiles() {
+	fmt.Println("Sweeping files...")
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		fmt.Println("failed to read dir", err)
+		return
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+
+		path := filepath.Join(dir, file.Name())
+		info, err := os.Stat(path)
+		if err != nil {
+			fmt.Println("failed to stat file", err)
+			continue
+		}
+
+		if (info.ModTime().Add(time.Hour * 24)).Before(time.Now()) {
+			fmt.Printf("Deleting file: %s\n", path)
+			os.Remove(path)
+		}
+	}
+	// run every 2 hours
+	time.AfterFunc(time.Hour*2, sweepFiles)
 }
