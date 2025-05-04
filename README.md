@@ -49,15 +49,15 @@ This is a simple Go-based HTTP server that allows clients to:
 ```bash
   // GET /{id}
   curl http://localhost:6969/d3f1a9c0-1d53-4269-bc80-a77d7b994c8a
-/* output:
-@14:02:11 - :
-Second line
+  /* output:
+    @14:02:11 - :
+    Second line
 
 
 
-@14:01:55 - :
-First line of text
-*/
+    @14:01:55 - :
+    First line of text
+  */
 ```
 
 ## Note
