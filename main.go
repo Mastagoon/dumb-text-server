@@ -13,6 +13,7 @@ import (
 )
 
 const dir = "./data"
+const MAX_STR = 1024 * 4
 
 func init() {
 	os.Mkdir(dir, 0755)
@@ -65,6 +66,10 @@ func handleWriteToFile(w http.ResponseWriter, r *http.Request) {
 	if err != nil || string(data) == "" {
 		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
+	}
+
+	if len(string(data)) > MAX_STR {
+		http.Error(w, "Input too long", http.StatusBadRequest)
 	}
 
 	key := r.URL.Path[1:]
