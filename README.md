@@ -1,4 +1,4 @@
-# Dumb Text Storage Server
+G# Dumb Text Storage Server
 
 This is a simple Go-based HTTP server that allows clients to:
 - Generate unique files
@@ -61,7 +61,5 @@ First line of text
 ```
 
 ## Note
-
-- Text is stored as actual files written to disk
-- If you intend to expose this server to the internet, it is recommended to handle rate limiting first
-
+All text data is stored as actual files on disk.
+If you plan to expose this server to the internet, it is strongly recommended to implement rate limiting to prevent abuse and protect disk resources.
